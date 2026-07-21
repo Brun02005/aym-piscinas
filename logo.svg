@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="A&amp;M Piscinas">
+  <defs>
+    <clipPath id="amCircle"><circle cx="120" cy="120" r="117"/></clipPath>
+  </defs>
+  <g clip-path="url(#amCircle)">
+    <!-- cielo / agua clara -->
+    <rect width="240" height="240" fill="#1B92E0"/>
+    <!-- masa de agua profunda (onda inferior) -->
+    <path d="M0,150 C 52,132 88,166 134,156 C 186,145 214,126 240,133 L240,240 L0,240 Z" fill="#17307B"/>
+    <!-- ola blanca principal -->
+    <path d="M-6,146 C 50,127 90,162 135,152 C 187,141 214,121 246,128" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+    <!-- ripple secundario -->
+    <path d="M-6,165 C 50,150 90,182 135,173 C 187,163 214,145 246,151" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" opacity=".92"/>
+  </g>
+  <!-- texto de marca -->
+  <text x="121" y="190" text-anchor="middle" font-family="'Arial Black', Arial, sans-serif" font-weight="800" font-size="62" fill="#ffffff" letter-spacing="-3">A&amp;M</text>
+  <text x="121" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-weight="600" font-size="23" fill="#ffffff" letter-spacing="5">PISCINAS</text>
+</svg>

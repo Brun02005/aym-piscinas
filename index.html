@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A&M Piscinas — Diseñá tu piscina a medida y pedí presupuesto al instante</title>
+<meta name="description" content="Elegí tu piscina entre nuestras tres gamas, personalizá color, iluminación, borde y accesorios, y recibí el presupuesto al instante. Un asesor de A&M Piscinas te contacta para coordinar la visita.">
+<meta name="theme-color" content="#0A2530">
+
+<!-- Open Graph: cómo se ve el link al compartirlo por WhatsApp / redes -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="A&M Piscinas">
+<meta property="og:title" content="Diseñá tu piscina a medida — A&M Piscinas">
+<meta property="og:description" content="Elegí tu modelo, personalizalo y llevate el presupuesto al instante. Te contactamos para coordinar la visita técnica sin cargo.">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Favicon: logo de la marca -->
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="logo.png" alt="A&amp;M Piscinas" onerror="this.onerror=null;this.src='logo.svg'">
+    <span class="brand-name">A&amp;M <b>Piscinas</b></span>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="catalogo">01 · Catálogo</button>
+    <button class="tab-btn" data-tab="personalizador">02 · Personalizador</button>
+    <button class="tab-btn" data-tab="presupuesto">03 · Presupuesto</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ TAB 1: CATÁLOGO ============ -->
+  <section class="tab-panel active" id="tab-catalogo">
+    <div class="hero water-shimmer">
+      <h1>Tres gamas. Una sola piscina: la tuya.</h1>
+      <p>Trabajamos con distintos fabricantes para cubrir cada presupuesto. Elegí tu modelo, personalizá los detalles y llevate el presupuesto al instante.</p>
+      <div class="hero-cta">
+        <button class="btn-hero-primary" id="btn-abrir-quiz">Ayudame a elegir</button>
+        <a class="btn-hero-ghost" href="#como-funciona">Cómo funciona</a>
+      </div>
+    </div>
+
+    <!-- Quiz guiado: recomienda modelos según espacio, uso y presupuesto -->
+    <div class="quiz-wrap" id="quiz-wrap" hidden>
+      <div class="quiz-card">
+        <button class="quiz-close" id="quiz-close" aria-label="Cerrar">✕</button>
+        <div id="quiz-body"><!-- generado por JS --></div>
+      </div>
+    </div>
+
+    <!-- ¿Entra en mi patio?: el usuario ingresa las medidas de su terreno y ve qué modelos le entran -->
+    <section class="entra-patio" id="entra-patio">
+      <h2>¿Entra en mi patio?</h2>
+      <p class="entra-sub">Ingresá las medidas de tu terreno disponible y te mostramos qué modelos entran.</p>
+      <div class="entra-form">
+        <div class="entra-field">
+          <label for="terreno-largo">Largo disponible (m)</label>
+          <input type="number" id="terreno-largo" min="1" max="30" step="0.1" placeholder="Ej: 8.00">
+        </div>
+        <div class="entra-field">
+          <label for="terreno-ancho">Ancho disponible (m)</label>
+          <input type="number" id="terreno-ancho" min="1" max="15" step="0.1" placeholder="Ej: 4.00">
+        </div>
+        <button class="btn-primary" id="btn-verificar-patio" type="button">Verificar</button>
+      </div>
+      <div id="entra-resultados" hidden><!-- generado por JS --></div>
+    </section>
+
+    <div id="catalogo-lista"><!-- generado por JS --></div>
+
+    <!-- Cómo funciona: proceso de compra paso a paso -->
+    <section class="como-funciona" id="como-funciona">
+      <h2>¿Cómo funciona?</h2>
+      <p class="cf-sub">De la idea al chapuzón, sin vueltas. Nosotros nos ocupamos de que sea simple.</p>
+      <ol class="cf-steps">
+        <li>
+          <span class="cf-num">1</span>
+          <b>Elegí y personalizá</b>
+          <p>Recorré el catálogo, elegí tu modelo y ajustá color, luz, borde y accesorios. Ves el precio actualizarse en vivo.</p>
+        </li>
+        <li>
+          <span class="cf-num">2</span>
+          <b>Pedí tu presupuesto</b>
+          <p>Dejás tus datos y nos llega tu configuración completa. Sin compromiso y sin cargo.</p>
+        </li>
+        <li>
+          <span class="cf-num">3</span>
+          <b>Visita técnica</b>
+          <p>Un asesor coordina una visita para medir el terreno y confirmar el valor final con instalación incluida.</p>
+        </li>
+        <li>
+          <span class="cf-num">4</span>
+          <b>Instalación</b>
+          <p>Coordinamos la obra y dejamos tu piscina lista para usar. Te acompañamos en la puesta en marcha.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Confianza -->
+    <section class="trust-band">
+      <div class="trust-item"><b>Multimarca</b><span>Trabajamos con varios fabricantes para cubrir cada presupuesto.</span></div>
+      <div class="trust-item"><b>Visita sin cargo</b><span>Medimos tu terreno y cotizamos la instalación sin compromiso.</span></div>
+      <div class="trust-item"><b>Financiación</b><span>Consultá por planes de pago en cuotas.</span></div>
+      <div class="trust-item"><b>Instalación incluida</b><span>Nos ocupamos de la obra, no solo de vender la piscina.</span></div>
+    </section>
+
+    <!-- Obras realizadas -->
+    <section class="obras" id="obras">
+      <h2>Obras realizadas</h2>
+      <p class="obras-sub">Piscinas que instalamos, listas para el primer chapuzón. Cada patio, una historia distinta.</p>
+      <p class="aviso-ejemplo" id="aviso-obras" hidden>Galería de ejemplo — reemplazar por fotos reales de A&amp;M.</p>
+      <div class="obras-grid" id="obras-grid"><!-- generado por JS --></div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="testimonios" id="testimonios">
+      <h2>Lo que dicen nuestros clientes</h2>
+      <p class="aviso-ejemplo" id="aviso-testi" hidden>Testimonios de ejemplo — reemplazar por reseñas reales.</p>
+      <div class="testi-grid" id="testi-grid"><!-- generado por JS --></div>
+    </section>
+
+    <!-- FAQ / Preguntas frecuentes -->
+    <section class="faq-section" id="faq">
+      <h2>Preguntas frecuentes</h2>
+      <p class="faq-sub">Todo lo que necesitás saber antes de dar el primer paso. Si no encontrás tu pregunta, escribinos por WhatsApp.</p>
+      <p class="aviso-ejemplo" id="aviso-faq" hidden>Contenido genérico de referencia — ajustar con información oficial de A&amp;M.</p>
+      <div class="faq-list" id="faq-list"><!-- generado por JS --></div>
+    </section>
+  </section>
+
+  <!-- ============ TAB 2: PERSONALIZADOR ============ -->
+  <section class="tab-panel" id="tab-personalizador">
+    <div class="personalizer-grid">
+
+      <div class="preview-pane">
+        <div class="render-stage" id="render-stage">
+          <!-- foto del patio del cliente (se ubica detrás del render) -->
+          <img id="patio-bg" alt="Tu patio" hidden>
+          <!-- piscina superponible sobre la foto (arrastrable + escalable) -->
+          <div id="pool-overlay" hidden><!-- SVG de la piscina, generado por JS --></div>
+          <!-- croquis técnico del modelo, generado por JS a partir de sus datos -->
+          <svg id="pool-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="stage-tag">Vista en tu patio — <span id="preview-modelo-nombre">—</span></div>
+        </div>
+
+        <!-- Probá la piscina en tu patio: subís una foto y ubicás la piscina encima -->
+        <div class="patio-tools">
+          <label class="btn-patio" id="btn-patio-label">
+            📷 Probá la piscina en tu patio
+            <input type="file" id="patio-input" accept="image/*" hidden>
+          </label>
+          <button type="button" class="btn-patio-clear" id="patio-clear" hidden>Quitar foto</button>
+        </div>
+        <div class="patio-size" id="patio-size-wrap" hidden>
+          <label for="patio-size">Tamaño de la piscina</label>
+          <input type="range" id="patio-size" min="25" max="80" value="48">
+          <p class="patio-hint">Arrastrá la piscina para ubicarla donde iría en tu patio.</p>
+        </div>
+
+        <!-- Vista de perfil / corte de la pileta: dibujo de costado con profundidad, escalones y solárium -->
+        <div class="profile-view-wrap">
+          <h3 class="profile-title">Vista de perfil (corte)</h3>
+          <div class="profile-stage">
+            <svg id="profile-svg" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+        </div>
+
+        <div class="spec-sheet">
+          <div class="spec-row"><span>Dimensiones</span><b id="spec-dim">—</b></div>
+          <div class="spec-row"><span>Capacidad</span><b id="spec-capacidad">—</b></div>
+          <div class="spec-row"><span>Solarium</span><b id="spec-solarium">—</b></div>
+          <div class="spec-row"><span>Escalones</span><b id="spec-escalones">—</b></div>
+          <div class="spec-row"><span>Línea</span><b id="spec-gama">—</b></div>
+          <div class="spec-row"><span>Fabricante</span><b id="spec-marca">—</b></div>
+          <div class="spec-row"><span>Material base</span><b id="spec-material">—</b></div>
+        </div>
+      </div>
+
+      <div class="controls-pane">
+        <h2>Personalizá tu modelo</h2>
+
+        <div class="control-group">
+          <label>Color de revestimiento</label>
+          <div class="swatches" id="opt-color"></div>
+        </div>
+
+        <div class="control-group">
+          <label>Entorno de tu patio <span class="label-hint">(así se vería alrededor)</span></label>
+          <div class="pill-options" id="opt-entorno"></div>
+        </div>
+
+        <div class="control-group">
+          <label>Iluminación</label>
+          <div class="pill-options" id="opt-luz"></div>
+        </div>
+
+        <div class="control-group">
+          <label>Borde</label>
+          <div class="pill-options" id="opt-borde"></div>
+        </div>
+
+        <div class="control-group">
+          <label>Accesorios</label>
+          <div class="checkbox-options" id="opt-accesorios"></div>
+        </div>
+
+        <div class="price-ticker">
+          <span>Total estimado</span>
+          <b id="ticker-total">$0</b>
+        </div>
+
+        <button class="btn-primary" id="btn-ver-presupuesto">Ver presupuesto completo →</button>
+        <button class="btn-share-line" id="btn-compartir-perso">🔗 Compartir este diseño</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 3: PRESUPUESTO ============ -->
+  <section class="tab-panel" id="tab-presupuesto">
+    <div class="budget-wrap">
+      <!-- Encabezado que aparece solo al imprimir / guardar PDF -->
+      <div class="print-header">
+        <div class="ph-left">
+          <img class="ph-logo" src="logo.png" alt="A&amp;M Piscinas" onerror="this.onerror=null;this.src='logo.svg'">
+          <div class="ph-titles">
+            <span class="ph-brand">A&amp;M Piscinas</span>
+            <span class="ph-tagline">Piscinas a medida · Multimarca · Córdoba, Argentina</span>
+          </div>
+        </div>
+        <div class="ph-right">
+          <span class="ph-contact" id="ph-contact"></span>
+          <span class="ph-meta">Presupuesto orientativo · <span id="print-fecha"></span></span>
+        </div>
+      </div>
+
+      <h2>Tu presupuesto</h2>
+
+      <!-- Croquis técnico de la configuración elegida (también sale en el PDF) -->
+      <figure class="budget-plano-wrap">
+        <svg id="budget-plano" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg"></svg>
+        <figcaption>Croquis técnico de tu configuración — a confirmar en la visita técnica.</figcaption>
+      </figure>
+
+      <div class="blueprint-card">
+        <div class="bp-row bp-head"><span>Ítem</span><span>Detalle</span><span>Precio</span></div>
+        <div id="presupuesto-detalle"><!-- generado por JS --></div>
+        <div class="bp-row bp-total"><span>Total estimado</span><span></span><span id="bp-total">$0</span></div>
+      </div>
+
+      <p class="financiacion-nota">💳 Financiación disponible — consultá por planes de pago en cuotas con tu asesor.</p>
+
+      <!-- Captura de datos del cliente: el asesor recibe el lead aunque no abra el chat -->
+      <form class="lead-form" id="lead-form" novalidate>
+        <h3>Dejanos tus datos y te contactamos</h3>
+        <p class="lead-sub">Te escribimos para coordinar la visita técnica sin cargo. Tus datos no se comparten con terceros.</p>
+        <div class="lead-grid">
+          <div class="field">
+            <label for="lead-nombre">Nombre y apellido</label>
+            <input type="text" id="lead-nombre" name="nombre" autocomplete="name" placeholder="Ej: Bruno Pérez">
+          </div>
+          <div class="field">
+            <label for="lead-tel">Teléfono / WhatsApp</label>
+            <input type="tel" id="lead-tel" name="telefono" autocomplete="tel" placeholder="Ej: 351 339 4942">
+          </div>
+          <div class="field">
+            <label for="lead-localidad">Localidad</label>
+            <input type="text" id="lead-localidad" name="localidad" autocomplete="address-level2" placeholder="Ej: Córdoba Capital">
+          </div>
+          <div class="field">
+            <label for="lead-email">Email <span class="opcional">(opcional)</span></label>
+            <input type="email" id="lead-email" name="email" autocomplete="email" placeholder="tucorreo@mail.com">
+          </div>
+          <div class="field">
+            <label for="lead-dia">Día preferido para la visita <span class="opcional">(opcional)</span></label>
+            <select id="lead-dia" name="dia">
+              <option value="">Sin preferencia</option>
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
+              <option value="Sábado">Sábado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lead-horario">Franja horaria <span class="opcional">(opcional)</span></label>
+            <select id="lead-horario" name="horario">
+              <option value="">Sin preferencia</option>
+              <option value="Mañana (8 a 12 h)">Mañana (8 a 12 h)</option>
+              <option value="Siesta (12 a 16 h)">Siesta (12 a 16 h)</option>
+              <option value="Tarde (16 a 20 h)">Tarde (16 a 20 h)</option>
+            </select>
+          </div>
+        </div>
+        <p class="lead-error" id="lead-error" hidden></p>
+      </form>
+
+      <div class="cta-row">
+        <button type="button" class="btn-whatsapp" id="btn-whatsapp">
+          Enviar presupuesto a WhatsApp
+        </button>
+        <button type="button" class="btn-instagram" id="btn-instagram">
+          Consultar por Instagram
+        </button>
+      </div>
+      <div class="cta-row cta-row-secondary">
+        <button type="button" class="btn-ghost" id="btn-compartir">🔗 Compartir mi diseño</button>
+        <button type="button" class="btn-ghost" id="btn-pdf">Descargar / imprimir presupuesto (PDF)</button>
+        <button type="button" class="btn-ghost" id="btn-editar">← Seguir personalizando</button>
+      </div>
+      <p class="fine-print">Presupuesto orientativo. Un asesor confirma el valor final tras la visita técnica.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="foot-brand">
+    <img class="foot-logo" src="logo.png" alt="A&amp;M Piscinas" onerror="this.onerror=null;this.src='logo.svg'">
+    <span>A&amp;M <b>Piscinas</b></span>
+  </div>
+  <p>Piscinas a medida · Multimarca · Córdoba, Argentina</p>
+  <div class="foot-links">
+    <a href="#" id="foot-wpp">WhatsApp</a>
+    <a href="#" id="foot-ig">Instagram</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#faq">Preguntas frecuentes</a>
+  </div>
+  <p class="foot-fine">© <span id="foot-year"></span> A&amp;M Piscinas. Precios orientativos sujetos a visita técnica.</p>
+</footer>
+
+<!-- Botón flotante de WhatsApp: siempre visible para consultas rápidas -->
+<a class="fab-whatsapp" id="fab-whatsapp" href="#" aria-label="Consultar por WhatsApp" title="Consultar por WhatsApp">
+  <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+    <path fill="currentColor" d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.7 1.4 5.8 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.9 1 1-4.8-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C4.9 9.4 9.9 4.9 16 4.9S27.1 9.4 27.1 15 22.1 24.8 16 24.8zm5.6-7.4c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1c-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1s0-.5.1-.6l.5-.5c.2-.2.2-.3.3-.5s0-.4 0-.5c-.1-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.5 1.1 2.9 1.2 3.1c.2.2 2.2 3.4 5.3 4.7.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/>
+  </svg>
+</a>
+
+<!-- Barra flotante del comparador (aparece al elegir modelos) -->
+<div class="compare-bar" id="compare-bar" hidden>
+  <span id="compare-count">0 modelos</span>
+  <div class="compare-bar-actions">
+    <button type="button" id="compare-open">Comparar</button>
+    <button type="button" id="compare-clear">Limpiar</button>
+  </div>
+</div>
+
+<!-- Modal del comparador -->
+<div class="compare-modal" id="compare-modal" hidden>
+  <div class="compare-card">
+    <button class="quiz-close" id="compare-close" aria-label="Cerrar">✕</button>
+    <h3>Comparar modelos</h3>
+    <div id="compare-body"><!-- generado por JS --></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
