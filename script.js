@@ -35,7 +35,7 @@ async function obtenerCotizacion() {
 function formatearPrecio(usd) {
   if (usd === null || usd === undefined) return `<span class="precio-pendiente">Consultar precio</span>`;
   const ars = Math.round(usd * cotizacionARS);
-  return `USD ${usd.toLocaleString('en-US')} <span class="ars-equiv">≈ $${ars.toLocaleString('es-AR')} ARS</span>`;
+  return `$${ars.toLocaleString('es-AR')} ARS <span class="usd-equiv">≈ USD ${usd.toLocaleString('en-US')}</span>`;
 }
 
 // ---------- 1. DATOS DEL CATÁLOGO ----------
@@ -46,7 +46,7 @@ function formatearPrecio(usd) {
 //
 // ⚠️ TODOS los precios son ILUSTRATIVOS (placeholder) hasta que se carguen
 // los valores reales. Ver bandera PRECIOS_ILUSTRATIVOS más abajo.
-const PRECIOS_ILUSTRATIVOS = true;
+let PRECIOS_ILUSTRATIVOS = true; // editable desde el panel de edición
 
 // Orden en que se muestran las gamas, y su copy de presentación
 const GAMAS = [
@@ -55,7 +55,7 @@ const GAMAS = [
     titulo: "Gama alta",
     bajada: "Hormigón proyectado y terminaciones premium. Obra a medida.",
     incluye: "Incluye proyecto, excavación, obra de hormigón e instalación del equipo de filtrado. Terminaciones a elección.",
-    abiertaPorDefecto: false,
+    abiertaPorDefecto: true,
   },
   {
     id: "media",
@@ -69,7 +69,7 @@ const GAMAS = [
     titulo: "Gama de entrada",
     bajada: "Modelos compactos, listos para instalar. La opción más accesible.",
     incluye: "Incluye la piscina y el kit básico de filtrado. Instalación y movimiento de suelo a coordinar según el caso.",
-    abiertaPorDefecto: false,
+    abiertaPorDefecto: true,
   },
 ];
 
@@ -79,7 +79,7 @@ const ORDEN_LINEAS = [
   "Infinity", "Skimmer premium", "Compactas", "Prefabricadas",
 ];
 
-const CATALOGO = [
+let CATALOGO = [ // let: se reemplaza con los datos de Supabase si hay conexión
   // ============ GAMA ALTA — BOCETO (marcas y datos de ejemplo) ============
   { id: "hz-inf80", nombre: "Infinity 800", gama: "alta", linea: "Infinity", marca: "Hormigón a medida", largo: 8.00, ancho: 3.80, profundidad: 1.60, capacidadLitros: 42000, solarium: "2.00 x 1.20 m", escalones: 4, material: "Hormigón proyectado + revestimiento de gresite", precioBase: 24000, esBoceto: true },
   { id: "hz-inf1000", nombre: "Infinity 1000", gama: "alta", linea: "Infinity", marca: "Hormigón a medida", largo: 10.00, ancho: 4.20, profundidad: 1.80, capacidadLitros: 62000, solarium: "2.40 x 1.20 m", escalones: 4, material: "Hormigón proyectado + revestimiento de gresite", precioBase: 34000, esBoceto: true },
@@ -120,9 +120,9 @@ const CATALOGO = [
 // Contenido de EJEMPLO para mostrar cómo se vería la galería y las reseñas.
 // Reemplazar por obras/reseñas reales: cargar `imagen` con la ruta a la foto
 // (ej: "obras/casa-lopez.jpg") y poner CONTENIDO_EJEMPLO en false.
-const CONTENIDO_EJEMPLO = true;
+let CONTENIDO_EJEMPLO = true; // editable desde el panel de edición
 
-const OBRAS = [
+let OBRAS = [
   { titulo: "Piscina familiar con deck", localidad: "Villa Allende, Córdoba", modelo: "Solarium XL · 8,00 m", imagen: null },
   { titulo: "Fondo de jardín con cascada", localidad: "Córdoba Capital", modelo: "Solarium L · 7,00 m", imagen: null },
   { titulo: "Piscina compacta en patio urbano", localidad: "Nueva Córdoba", modelo: "Exclusivo · 3,00 m", imagen: null },
@@ -131,7 +131,7 @@ const OBRAS = [
   { titulo: "Piscina de fibra lista en una semana", localidad: "Jesús María", modelo: "Solarium Mix · 5,80 m", imagen: null },
 ];
 
-const TESTIMONIOS = [
+let TESTIMONIOS = [
   { texto: "El configurador nos ayudó a decidir sin presión. Llegamos a la visita técnica ya sabiendo qué queríamos.", nombre: "Familia López", localidad: "Villa Allende", estrellas: 5 },
   { texto: "Impecables de principio a fin. La piscina quedó tal cual la habíamos armado en la web.", nombre: "Marina G.", localidad: "Córdoba Capital", estrellas: 5 },
   { texto: "Nos pasaron el presupuesto al instante por WhatsApp y coordinamos la obra en pocos días.", nombre: "Diego y Sol", localidad: "Mendiolaza", estrellas: 5 },
@@ -174,9 +174,9 @@ function renderTestimonios() {
 // ---------- 1.2 FAQ / PREGUNTAS FRECUENTES ----------
 // Contenido genérico razonable, marcado con flag para que el dueño ajuste.
 // Cuando se cargue la información oficial, poner CONTENIDO_FAQ = false.
-const CONTENIDO_FAQ = true;
+let CONTENIDO_FAQ = true; // editable desde el panel de edición
 
-const FAQ_DATOS = [
+let FAQ_DATOS = [
   {
     pregunta: "¿Cuánto tarda la instalación de una piscina?",
     respuesta: `<p>Depende del tipo de piscina. Una piscina de fibra de vidrio puede estar instalada en <b>5 a 10 días hábiles</b> desde que arranca la obra. Las piscinas de hormigón proyectado (gama alta) llevan entre <b>30 y 60 días</b> según el tamaño y las terminaciones.</p><p>En la visita técnica te damos un cronograma detallado.</p>`,
@@ -308,12 +308,43 @@ function guardarEstado() {
 let estado = cargarEstado();
 
 // ---------- 4. NAVEGACIÓN ENTRE PESTAÑAS ----------
-function irATab(nombreTab) {
+// Muestra u oculta los botones de Personalizador y Presupuesto según si
+// el usuario ya eligió un modelo. Así el primerizo solo ve el Catálogo.
+function actualizarTabsVisibles() {
+  const hayModelo = !!estado.modeloId;
+  const btnPerso = document.querySelector('.tab-btn[data-tab="personalizador"]');
+  const btnPresu = document.querySelector('.tab-btn[data-tab="presupuesto"]');
+  if (btnPerso) btnPerso.hidden = !hayModelo;
+  if (btnPresu) btnPresu.hidden = !hayModelo;
+}
+
+// Cambia la vista de pestaña sin tocar el historial (uso interno + popstate)
+function _cambiarVistaTab(nombreTab) {
+  actualizarTabsVisibles();
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === nombreTab));
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.id === `tab-${nombreTab}`));
   if (nombreTab === "personalizador") renderPersonalizador();
   if (nombreTab === "presupuesto") renderPresupuesto();
 }
+
+// Cambia de pestaña Y registra en el historial (para que Atrás funcione)
+function irATab(nombreTab) {
+  _cambiarVistaTab(nombreTab);
+  // Evitar duplicar la entrada actual en el historial
+  if (!history.state || history.state.tab !== nombreTab) {
+    history.pushState({ tab: nombreTab }, "");
+  }
+}
+
+// Al pulsar Atrás/Adelante, volver a la pestaña correspondiente sin pushear
+window.addEventListener("popstate", (e) => {
+  if (e.state && e.state.tab) {
+    _cambiarVistaTab(e.state.tab);
+  } else {
+    // Sin estado guardado → volver al catálogo (entrada inicial)
+    _cambiarVistaTab("catalogo");
+  }
+});
 
 document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest(".tab-btn");
@@ -404,8 +435,16 @@ function getModeloActual() {
 }
 
 function renderPersonalizador() {
+  // Estado vacío: si el cliente no eligió modelo, mostrar invitación al catálogo
+  if (!estado.modeloId) {
+    document.getElementById("empty-personalizador").hidden = false;
+    document.querySelector("#tab-personalizador .personalizer-grid").style.display = "none";
+    return;
+  }
+  document.getElementById("empty-personalizador").hidden = true;
+  document.querySelector("#tab-personalizador .personalizer-grid").style.display = "";
+
   const modelo = getModeloActual();
-  if (!estado.modeloId) estado.modeloId = modelo.id;
 
   document.getElementById("preview-modelo-nombre").textContent = modelo.nombre;
   document.getElementById("spec-dim").textContent = dimensionesTexto(modelo);
@@ -458,7 +497,7 @@ function renderPersonalizador() {
   accCont.innerHTML = OPCIONES.accesorios.map(a => `
     <label class="checkbox-item">
       <input type="checkbox" data-id="${a.id}" ${estado.accesorios.includes(a.id) ? 'checked' : ''}/>
-      ${a.nombre} (+USD ${a.precio.toLocaleString('en-US')})
+      ${a.nombre} (+$${Math.round(a.precio * cotizacionARS).toLocaleString('es-AR')} ARS)
     </label>
   `).join("");
   accCont.querySelectorAll("input").forEach(el => {
@@ -623,8 +662,8 @@ function actualizarRenderVisual() {
   if (patioActivo) dibujarPoolOverlay();
 }
 
-// Paleta del plano (monocromo tinta sobre papel + un acento sobrio)
-const BP = { ink: "#0A2530", paper: "#F2EFE6", grid: "rgba(10,37,48,.07)", acc: "#0D6E77", mono: "JetBrains Mono, monospace" };
+// Paleta del plano (monocromo tinta sobre papel + un acento azul sobrio)
+const BP = { ink: "#0B1221", paper: "#F4F6FA", grid: "rgba(28,111,228,.08)", acc: "#16346E", mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace' };
 
 function buildBlueprint(m, sfx = "") {
   const color   = OPCIONES.color.find(c => c.id === estado.color);
@@ -937,6 +976,15 @@ function armarDetalle() {
 }
 
 function renderPresupuesto() {
+  // Estado vacío: si el cliente no eligió modelo, mostrar invitación al catálogo
+  if (!estado.modeloId) {
+    document.getElementById("empty-presupuesto").hidden = false;
+    document.querySelector("#tab-presupuesto .budget-wrap").style.display = "none";
+    return;
+  }
+  document.getElementById("empty-presupuesto").hidden = true;
+  document.querySelector("#tab-presupuesto .budget-wrap").style.display = "";
+
   // Croquis técnico de la configuración elegida (mismo generador que el personalizador)
   const plano = document.getElementById("budget-plano");
   if (plano) plano.innerHTML = buildBlueprint(getModeloActual(), "b");
@@ -947,7 +995,7 @@ function renderPresupuesto() {
     <div class="bp-row">
       <span>${f.item}</span>
       <span>${f.detalle}</span>
-      <span>${f.precio ? 'USD ' + f.precio.toLocaleString('en-US') : '—'}</span>
+      <span>${f.precio ? '$' + Math.round(f.precio * cotizacionARS).toLocaleString('es-AR') + ' <span class="usd-equiv">≈ USD ' + f.precio.toLocaleString('en-US') + '</span>' : '—'}</span>
     </div>
   `).join("");
   document.getElementById("bp-total").innerHTML = formatearPrecio(calcularTotal());
@@ -964,7 +1012,7 @@ function generarMensaje() {
   const totalUSD = calcularTotal();
   const lineaPrecio = totalUSD === null
     ? "A confirmar con un asesor"
-    : `USD ${totalUSD.toLocaleString('en-US')} (≈ $${Math.round(totalUSD * cotizacionARS).toLocaleString('es-AR')} ARS)`;
+    : `$${Math.round(totalUSD * cotizacionARS).toLocaleString('es-AR')} ARS (≈ USD ${totalUSD.toLocaleString('en-US')})`;  
 
   const c = estado.contacto || {};
   const datosContacto = (c.nombre || c.telefono || c.localidad || c.email)
@@ -989,11 +1037,12 @@ function generarMensaje() {
 ¿Podemos coordinar una visita o llamada para avanzar?`;
 }
 
-// Número real de A&M Piscinas, formato internacional sin "+" ni espacios
-const NUMERO_WHATSAPP = "5493513394942";
-const USUARIO_INSTAGRAM = "savarella_bruno";
+// Número real de A&M Piscinas, formato internacional sin "+" ni espacios.
+// Son `let` porque el panel de edición puede sobrescribirlos.
+let NUMERO_WHATSAPP = "5493513394942";
+let USUARIO_INSTAGRAM = "savarella_bruno";
 // Versión legible del teléfono para mostrar (encabezado del PDF, etc.)
-const WHATSAPP_DISPLAY = "+54 9 351 339 4942";
+let WHATSAPP_DISPLAY = "+54 9 351 339 4942";
 
 // Endpoint opcional para recibir los leads también por email/planilla (ej. Formspree).
 // Dejar "" para desactivarlo; el lead siempre viaja igual dentro del mensaje de WhatsApp.
@@ -1094,6 +1143,7 @@ function mostrarToast(texto) {
 document.getElementById("btn-whatsapp").addEventListener("click", () => {
   if (!validarLead()) return;
   enviarLeadEndpoint();
+  guardarLeadEnSupabase();
   const mensaje = generarMensaje();
   const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
   window.open(url, "_blank");
@@ -1102,6 +1152,7 @@ document.getElementById("btn-whatsapp").addEventListener("click", () => {
 document.getElementById("btn-instagram").addEventListener("click", async () => {
   if (!validarLead()) return;
   enviarLeadEndpoint();
+  guardarLeadEnSupabase();
   // Instagram no permite precargar texto en el DM: copiamos el presupuesto al
   // portapapeles para que el cliente solo tenga que pegarlo en el chat.
   const mensaje = generarMensaje();
@@ -1116,6 +1167,7 @@ document.getElementById("btn-instagram").addEventListener("click", async () => {
 
 // PDF: usamos el diálogo de impresión del navegador (permite "Guardar como PDF")
 document.getElementById("btn-pdf").addEventListener("click", () => {
+  guardarLeadEnSupabase(); // el presupuesto que se imprime también queda registrado
   document.getElementById("print-fecha").textContent = new Date().toLocaleDateString("es-AR");
   window.print();
 });
@@ -1214,7 +1266,7 @@ function renderQuizResultados() {
           <b>${m.nombre}</b>
           <span>${gamaTitulo(m.gama)} · ${dimensionesTexto(m)}</span>
         </div>
-        <div class="qr-price">${m.precioBase ? "Desde USD " + m.precioBase.toLocaleString("en-US") : "Consultar"}</div>
+        <div class="qr-price">${m.precioBase ? "Desde $" + Math.round(m.precioBase * cotizacionARS).toLocaleString("es-AR") + " ARS" : "Consultar"}</div>
         <button data-modelo="${m.id}">Personalizar</button>
       </div>`).join("")}
     <button class="quiz-restart" id="quiz-restart">Volver a empezar</button>`;
@@ -1282,6 +1334,7 @@ function aplicarDiseñoDesdeURL() {
 }
 
 async function compartirDiseño() {
+  guardarLeadEnSupabase(); // el presupuesto que se comparte también queda registrado
   const url = linkDeDiseño();
   const modelo = getModeloActual();
   const texto = `Mirá la piscina que armé en A&M Piscinas: ${modelo.nombre} (${gamaTitulo(modelo.gama)}).`;
@@ -1373,18 +1426,432 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !document.getElementById("compare-modal").hidden) cerrarComparador();
 });
 
+// ---------- 8.8 PANEL DE EDICIÓN (ADMIN) ----------
+// Permite que A&M edite contenido (contacto, textos, precios, obras,
+// testimonios, FAQ, avisos) sin tocar código. Los cambios se guardan como
+// "overrides" en localStorage y se aplican sobre los datos por defecto.
+// Se pueden exportar a un archivo para publicarlos para todos los visitantes.
+const OVERRIDES_KEY = "aym_overrides";
+function cargarOverrides() { try { return JSON.parse(localStorage.getItem(OVERRIDES_KEY)) || {}; } catch { return {}; } }
+function guardarOverridesLS(o) { try { localStorage.setItem(OVERRIDES_KEY, JSON.stringify(o)); } catch {} }
+let overrides = cargarOverrides();
+
+// Aplica los overrides guardados sobre los datos y textos por defecto.
+function aplicarOverrides() {
+  const o = overrides || {};
+  if (o.contacto) {
+    if (o.contacto.whatsapp) NUMERO_WHATSAPP = o.contacto.whatsapp;
+    if (o.contacto.instagram) USUARIO_INSTAGRAM = o.contacto.instagram;
+    if (o.contacto.whatsappDisplay) WHATSAPP_DISPLAY = o.contacto.whatsappDisplay;
+  }
+  if (o.flags) {
+    if (typeof o.flags.precios === "boolean") PRECIOS_ILUSTRATIVOS = o.flags.precios;
+    if (typeof o.flags.ejemplo === "boolean") CONTENIDO_EJEMPLO = o.flags.ejemplo;
+    if (typeof o.flags.faq === "boolean") CONTENIDO_FAQ = o.flags.faq;
+  }
+  if (o.precios) {
+    Object.entries(o.precios).forEach(([id, val]) => {
+      const m = CATALOGO.find(x => x.id === id);
+      if (m && val !== "" && val != null && !isNaN(+val)) m.precioBase = +val;
+    });
+  }
+  if (Array.isArray(o.obras)) OBRAS = o.obras;
+  if (Array.isArray(o.testimonios)) TESTIMONIOS = o.testimonios;
+  if (Array.isArray(o.faq)) FAQ_DATOS = o.faq;
+  if (o.hero) {
+    const ht = document.getElementById("hero-titulo"), hs = document.getElementById("hero-sub");
+    if (o.hero.titulo && ht) ht.textContent = o.hero.titulo;
+    if (o.hero.subtitulo && hs) hs.textContent = o.hero.subtitulo;
+  }
+}
+
+let adminDraft = null; // copia de trabajo mientras el panel está abierto
+const adminBody = () => document.getElementById("admin-body");
+const escA = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+function abrirAdmin() {
+  adminDraft = JSON.parse(JSON.stringify(overrides || {}));
+  document.getElementById("admin-overlay").hidden = false;
+  activarAdminTab("contacto");
+}
+function cerrarAdmin() { document.getElementById("admin-overlay").hidden = true; }
+
+function activarAdminTab(tab) {
+  document.querySelectorAll(".admin-tab").forEach(b => b.classList.toggle("active", b.dataset.atab === tab));
+  ({ contacto: adminContacto, textos: adminTextos, precios: adminPrecios,
+     obras: adminObras, testimonios: adminTestimonios, faq: adminFAQ, datos: adminDatos }[tab] || adminContacto)();
+}
+
+function adminContacto() {
+  const c = adminDraft.contacto || {};
+  const body = adminBody();
+  body.innerHTML = `
+    <h3 class="admin-section-title">Datos de contacto</h3>
+    <p class="admin-section-desc">Se usan en los botones de WhatsApp/Instagram, el footer y el PDF.</p>
+    <div class="admin-field"><label>WhatsApp (código de país, sin + ni espacios)</label><input id="ac-wpp"></div>
+    <div class="admin-field"><label>WhatsApp visible (como se muestra)</label><input id="ac-disp"></div>
+    <div class="admin-field"><label>Usuario de Instagram (sin @)</label><input id="ac-ig"></div>`;
+  const wpp = body.querySelector("#ac-wpp"), disp = body.querySelector("#ac-disp"), ig = body.querySelector("#ac-ig");
+  wpp.value = c.whatsapp ?? NUMERO_WHATSAPP;
+  disp.value = c.whatsappDisplay ?? WHATSAPP_DISPLAY;
+  ig.value = c.instagram ?? USUARIO_INSTAGRAM;
+  const setC = (k, v) => { adminDraft.contacto = { ...(adminDraft.contacto || {}), [k]: v }; };
+  wpp.addEventListener("input", e => setC("whatsapp", e.target.value.trim()));
+  disp.addEventListener("input", e => setC("whatsappDisplay", e.target.value));
+  ig.addEventListener("input", e => setC("instagram", e.target.value.trim().replace(/^@/, "")));
+}
+
+function adminTextos() {
+  const h = adminDraft.hero || {};
+  const body = adminBody();
+  const tActual = document.getElementById("hero-titulo").textContent;
+  const sActual = document.getElementById("hero-sub").textContent;
+  body.innerHTML = `
+    <h3 class="admin-section-title">Textos principales</h3>
+    <p class="admin-section-desc">El título grande y el texto de bienvenida de la portada.</p>
+    <div class="admin-field"><label>Título</label><textarea id="at-tit"></textarea></div>
+    <div class="admin-field"><label>Subtítulo</label><textarea id="at-sub"></textarea></div>`;
+  const tit = body.querySelector("#at-tit"), sub = body.querySelector("#at-sub");
+  tit.value = h.titulo ?? tActual;
+  sub.value = h.subtitulo ?? sActual;
+  tit.addEventListener("input", e => { adminDraft.hero = { ...(adminDraft.hero || {}), titulo: e.target.value }; });
+  sub.addEventListener("input", e => { adminDraft.hero = { ...(adminDraft.hero || {}), subtitulo: e.target.value }; });
+}
+
+function adminPrecios() {
+  const body = adminBody();
+  if (!adminDraft.precios) adminDraft.precios = {};
+  body.innerHTML = `
+    <h3 class="admin-section-title">Precios base (USD)</h3>
+    <p class="admin-section-desc">Precio de referencia de cada modelo en dólares. Se convierte a pesos solo.</p>
+    ${CATALOGO.map(m => `
+      <div class="admin-price-row">
+        <div class="apr-name">${escA(m.nombre)}<small>${escA(gamaTitulo(m.gama))} · ${escA(m.linea)}</small></div>
+        <input type="number" min="0" step="100" data-price="${m.id}">
+      </div>`).join("")}`;
+  body.querySelectorAll("[data-price]").forEach(inp => {
+    const id = inp.dataset.price;
+    inp.value = adminDraft.precios[id] ?? CATALOGO.find(x => x.id === id).precioBase ?? "";
+    inp.addEventListener("input", e => {
+      const v = e.target.value;
+      if (v === "") delete adminDraft.precios[id];
+      else adminDraft.precios[id] = +v;
+    });
+  });
+}
+
+// Editor de lista genérico (obras, testimonios, faq usan el mismo patrón)
+function adminObras() {
+  const body = adminBody();
+  if (!adminDraft.obras) adminDraft.obras = JSON.parse(JSON.stringify(OBRAS));
+  const pintar = () => {
+    body.innerHTML = `
+      <h3 class="admin-section-title">Obras realizadas</h3>
+      <p class="admin-section-desc">Cada tarjeta de la galería. En "Foto" poné la ruta a la imagen (ej: obras/casa.jpg) o dejalo vacío para el placeholder.</p>
+      ${adminDraft.obras.map((o, i) => `
+        <div class="admin-card">
+          <button class="admin-del" data-del="${i}" title="Eliminar">🗑</button>
+          <div class="admin-field"><label>Título</label><input data-f="titulo" data-i="${i}"></div>
+          <div class="admin-field"><label>Modelo</label><input data-f="modelo" data-i="${i}"></div>
+          <div class="admin-field"><label>Localidad</label><input data-f="localidad" data-i="${i}"></div>
+          <div class="admin-field"><label>Foto (ruta, opcional)</label><input data-f="imagen" data-i="${i}"></div>
+        </div>`).join("")}
+      <button class="admin-add" id="obra-add">+ Agregar obra</button>`;
+    body.querySelectorAll("input[data-f]").forEach(inp => {
+      const i = +inp.dataset.i, f = inp.dataset.f;
+      inp.value = adminDraft.obras[i][f] ?? "";
+      inp.addEventListener("input", e => { adminDraft.obras[i][f] = e.target.value; });
+    });
+    body.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { adminDraft.obras.splice(+b.dataset.del, 1); pintar(); }));
+    body.querySelector("#obra-add").addEventListener("click", () => { adminDraft.obras.push({ titulo: "Nueva obra", modelo: "", localidad: "", imagen: "" }); pintar(); });
+  };
+  pintar();
+}
+
+function adminTestimonios() {
+  const body = adminBody();
+  if (!adminDraft.testimonios) adminDraft.testimonios = JSON.parse(JSON.stringify(TESTIMONIOS));
+  const pintar = () => {
+    body.innerHTML = `
+      <h3 class="admin-section-title">Testimonios</h3>
+      <p class="admin-section-desc">Reseñas de clientes. Estrellas de 1 a 5.</p>
+      ${adminDraft.testimonios.map((t, i) => `
+        <div class="admin-card">
+          <button class="admin-del" data-del="${i}" title="Eliminar">🗑</button>
+          <div class="admin-field"><label>Texto</label><textarea data-f="texto" data-i="${i}"></textarea></div>
+          <div class="admin-field"><label>Nombre</label><input data-f="nombre" data-i="${i}"></div>
+          <div class="admin-field"><label>Localidad</label><input data-f="localidad" data-i="${i}"></div>
+          <div class="admin-field"><label>Estrellas (1-5)</label><input type="number" min="1" max="5" data-f="estrellas" data-i="${i}"></div>
+        </div>`).join("")}
+      <button class="admin-add" id="testi-add">+ Agregar testimonio</button>`;
+    body.querySelectorAll("[data-f]").forEach(inp => {
+      const i = +inp.dataset.i, f = inp.dataset.f;
+      inp.value = adminDraft.testimonios[i][f] ?? "";
+      inp.addEventListener("input", e => {
+        adminDraft.testimonios[i][f] = f === "estrellas" ? Math.max(1, Math.min(5, +e.target.value || 5)) : e.target.value;
+      });
+    });
+    body.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { adminDraft.testimonios.splice(+b.dataset.del, 1); pintar(); }));
+    body.querySelector("#testi-add").addEventListener("click", () => { adminDraft.testimonios.push({ texto: "", nombre: "", localidad: "", estrellas: 5 }); pintar(); });
+  };
+  pintar();
+}
+
+function adminFAQ() {
+  const body = adminBody();
+  if (!adminDraft.faq) adminDraft.faq = JSON.parse(JSON.stringify(FAQ_DATOS));
+  const pintar = () => {
+    body.innerHTML = `
+      <h3 class="admin-section-title">Preguntas frecuentes</h3>
+      <p class="admin-section-desc">La respuesta admite HTML simple (ej: &lt;b&gt;negrita&lt;/b&gt;, &lt;p&gt;párrafo&lt;/p&gt;).</p>
+      ${adminDraft.faq.map((f, i) => `
+        <div class="admin-card">
+          <button class="admin-del" data-del="${i}" title="Eliminar">🗑</button>
+          <div class="admin-field"><label>Pregunta</label><input data-f="pregunta" data-i="${i}"></div>
+          <div class="admin-field"><label>Respuesta</label><textarea data-f="respuesta" data-i="${i}" style="min-height:100px"></textarea></div>
+        </div>`).join("")}
+      <button class="admin-add" id="faq-add">+ Agregar pregunta</button>`;
+    body.querySelectorAll("[data-f]").forEach(inp => {
+      const i = +inp.dataset.i, f = inp.dataset.f;
+      inp.value = adminDraft.faq[i][f] ?? "";
+      inp.addEventListener("input", e => { adminDraft.faq[i][f] = e.target.value; });
+    });
+    body.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { adminDraft.faq.splice(+b.dataset.del, 1); pintar(); }));
+    body.querySelector("#faq-add").addEventListener("click", () => { adminDraft.faq.push({ pregunta: "Nueva pregunta", respuesta: "<p>Respuesta</p>" }); pintar(); });
+  };
+  pintar();
+}
+
+function adminDatos() {
+  const body = adminBody();
+  const f = adminDraft.flags || {};
+  body.innerHTML = `
+    <h3 class="admin-section-title">Avisos de contenido</h3>
+    <p class="admin-section-desc">Destildá estos avisos cuando cargues los datos reales.</p>
+    <label class="admin-toggle"><input type="checkbox" id="fl-precios"><span>Aviso "precios orientativos"<span class="at-desc">Tildado mientras los precios no sean definitivos.</span></span></label>
+    <label class="admin-toggle"><input type="checkbox" id="fl-ejemplo"><span>Aviso "galería/testimonios de ejemplo"<span class="at-desc">Destildá cuando cargues obras y reseñas reales.</span></span></label>
+    <label class="admin-toggle"><input type="checkbox" id="fl-faq"><span>Aviso "FAQ de referencia"<span class="at-desc">Destildá cuando la FAQ sea la oficial.</span></span></label>
+    <h3 class="admin-section-title" style="margin-top:22px">Copia de seguridad</h3>
+    <p class="admin-section-desc">Los cambios se guardan en este navegador. Para publicarlos para todos, descargá el archivo y pasáselo a tu desarrollador, o importalo en otra compu.</p>
+    <div class="admin-datos-actions">
+      <button class="admin-btn" id="dt-export">⬇ Descargar cambios (JSON)</button>
+      <label class="admin-btn" style="cursor:pointer">⬆ Importar cambios<input type="file" id="dt-import" accept="application/json" hidden></label>
+      <button class="admin-btn danger" id="dt-reset">↺ Restablecer todo a los valores originales</button>
+    </div>`;
+  const setF = (k, v) => { adminDraft.flags = { ...(adminDraft.flags || {}), [k]: v }; };
+  const pc = body.querySelector("#fl-precios"); pc.checked = f.precios ?? PRECIOS_ILUSTRATIVOS; pc.addEventListener("change", e => setF("precios", e.target.checked));
+  const pe = body.querySelector("#fl-ejemplo"); pe.checked = f.ejemplo ?? CONTENIDO_EJEMPLO; pe.addEventListener("change", e => setF("ejemplo", e.target.checked));
+  const pf = body.querySelector("#fl-faq"); pf.checked = f.faq ?? CONTENIDO_FAQ; pf.addEventListener("change", e => setF("faq", e.target.checked));
+  body.querySelector("#dt-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(adminDraft, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "aym-contenido.json"; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  body.querySelector("#dt-import").addEventListener("change", e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try { guardarOverridesLS(JSON.parse(reader.result)); location.reload(); }
+      catch { mostrarToast("El archivo no es válido."); }
+    };
+    reader.readAsText(file);
+  });
+  body.querySelector("#dt-reset").addEventListener("click", () => {
+    if (confirm("¿Borrar todos los cambios y volver a los valores originales?")) {
+      localStorage.removeItem(OVERRIDES_KEY); location.reload();
+    }
+  });
+}
+
+function guardarAdmin() {
+  overrides = adminDraft;
+  guardarOverridesLS(overrides);
+  location.reload(); // recarga para aplicar los cambios en toda la página
+}
+
+// Acceso al editor SOLO para A&M (empleado/vendedor), separado de la experiencia
+// del cliente: no hay ningún botón visible. Se abre con la URL terminada en
+// "#editar" o con el atajo de teclado Ctrl/Cmd + Shift + E.
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "E" || e.key === "e")) {
+    e.preventDefault();
+    document.getElementById("admin-overlay").hidden ? abrirAdmin() : cerrarAdmin();
+  }
+});
+document.getElementById("admin-close").addEventListener("click", cerrarAdmin);
+document.getElementById("admin-overlay").addEventListener("click", e => { if (e.target.id === "admin-overlay") cerrarAdmin(); });
+document.getElementById("admin-tabs").addEventListener("click", e => {
+  const b = e.target.closest(".admin-tab"); if (b) activarAdminTab(b.dataset.atab);
+});
+document.getElementById("admin-save").addEventListener("click", guardarAdmin);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !document.getElementById("admin-overlay").hidden) cerrarAdmin();
+});
+
+// ---------- 8.9 SUPABASE (BACKEND) ----------
+// Si supabase-config.js tiene una URL y clave reales (no el placeholder), nos
+// conectamos para leer el contenido (modelos, obras, testimonios, FAQ, textos)
+// y guardar los leads. Si no hay configuración, o la conexión falla (sin
+// internet, proyecto pausado, etc.), el sitio sigue funcionando 100% con los
+// datos locales de este archivo: nunca se rompe por culpa del backend.
+const SUPABASE_CONFIGURADO =
+  typeof window.SUPABASE_URL === "string" && window.SUPABASE_URL && !window.SUPABASE_URL.includes("TU-PROYECTO") &&
+  typeof window.SUPABASE_ANON_KEY === "string" && window.SUPABASE_ANON_KEY && !window.SUPABASE_ANON_KEY.includes("TU_CLAVE");
+
+const supabaseClient = (SUPABASE_CONFIGURADO && window.supabase)
+  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
+  : null;
+
+// Trae el contenido desde Supabase y reemplaza los datos locales por los de
+// la base. Tiene un límite de tiempo para no colgar el arranque de la página
+// si la conexión es lenta; ante cualquier error, no toca nada y seguimos con
+// el contenido local.
+async function cargarDatosDeSupabase() {
+  if (!supabaseClient) return false;
+  try {
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 6000));
+    const consulta = Promise.all([
+      supabaseClient.from("config_sitio").select("*").eq("id", 1).maybeSingle(),
+      supabaseClient.from("modelos").select("*").eq("activo", true).order("orden"),
+      supabaseClient.from("obras").select("*").order("orden"),
+      supabaseClient.from("testimonios").select("*").order("orden"),
+      supabaseClient.from("faq").select("*").order("orden"),
+    ]);
+    const [cfgRes, modelosRes, obrasRes, testiRes, faqRes] = await Promise.race([consulta, timeout]);
+
+    if (modelosRes.data?.length) {
+      CATALOGO = modelosRes.data.map(m => ({
+        id: m.id, nombre: m.nombre, gama: m.gama, linea: m.linea, marca: m.marca,
+        largo: +m.largo, ancho: +m.ancho, profundidad: +m.profundidad,
+        capacidadLitros: m.capacidad_litros, solarium: m.solarium, escalones: m.escalones,
+        material: m.material, precioBase: m.precio_base, esBoceto: m.es_boceto, imagen: m.imagen,
+      }));
+    }
+    if (obrasRes.data?.length) {
+      OBRAS = obrasRes.data.map(o => ({ titulo: o.titulo, modelo: o.modelo, localidad: o.localidad, imagen: o.imagen }));
+    }
+    if (testiRes.data?.length) {
+      TESTIMONIOS = testiRes.data.map(t => ({ texto: t.texto, nombre: t.nombre, localidad: t.localidad, estrellas: t.estrellas }));
+    }
+    if (faqRes.data?.length) {
+      FAQ_DATOS = faqRes.data.map(f => ({ pregunta: f.pregunta, respuesta: f.respuesta }));
+    }
+    if (cfgRes.data) {
+      const c = cfgRes.data;
+      if (c.hero_titulo) document.getElementById("hero-titulo").textContent = c.hero_titulo;
+      if (c.hero_sub) document.getElementById("hero-sub").textContent = c.hero_sub;
+      if (c.whatsapp) NUMERO_WHATSAPP = c.whatsapp;
+      if (c.whatsapp_display) WHATSAPP_DISPLAY = c.whatsapp_display;
+      if (c.instagram) USUARIO_INSTAGRAM = c.instagram;
+      if (typeof c.flag_precios === "boolean") PRECIOS_ILUSTRATIVOS = c.flag_precios;
+      if (typeof c.flag_ejemplo === "boolean") CONTENIDO_EJEMPLO = c.flag_ejemplo;
+      if (typeof c.flag_faq === "boolean") CONTENIDO_FAQ = c.flag_faq;
+    }
+    return true;
+  } catch {
+    return false; // sin conexión, timeout, o tablas vacías: seguimos con lo local
+  }
+}
+
+// Registra el presupuesto en la base para que aparezca en el panel de gestión.
+// Se llama ante CUALQUIER acción sobre el presupuesto (WhatsApp, Instagram,
+// imprimir/PDF o compartir), así ningún pedido "se desvanece".
+//
+// Nota de seguridad (RLS): el cliente anónimo SOLO puede insertar leads (no
+// puede leer ni actualizar los de otros). Por eso no podemos deduplicar con un
+// UPDATE: en su lugar guardamos una "firma" del presupuesto y solo insertamos
+// una fila nueva cuando el diseño/contacto cambió respecto de la última vez.
+// Así, tocar WhatsApp y después Imprimir con el MISMO diseño no crea duplicados,
+// pero un diseño distinto sí queda registrado como un pedido nuevo.
+// Si falla (sin conexión, etc.) no interrumpe al cliente: el lead igual le llega
+// al vendedor por el chat.
+let ultimaFirmaGuardada = null;
+
+function firmaPresupuesto() {
+  const c = estado.contacto || {};
+  return JSON.stringify({
+    m: estado.modeloId, co: estado.color, e: estado.entorno, lz: estado.luz,
+    b: estado.borde, a: [...estado.accesorios].sort(),
+    n: c.nombre || "", t: c.telefono || "", em: c.email || "",
+  });
+}
+
+async function guardarLeadEnSupabase() {
+  if (!supabaseClient) return;
+  const firma = firmaPresupuesto();
+  if (firma === ultimaFirmaGuardada) return; // este presupuesto exacto ya se registró
+  const modelo = getModeloActual();
+  const c = estado.contacto || {};
+  try {
+    const { error } = await supabaseClient.from("leads").insert({
+      nombre: c.nombre || null,
+      telefono: c.telefono || null,
+      email: c.email || null,
+      localidad: c.localidad || null,
+      dia: c.dia || null,
+      horario: c.horario || null,
+      modelo_id: modelo.id,
+      config: { color: estado.color, entorno: estado.entorno, luz: estado.luz, borde: estado.borde, accesorios: estado.accesorios },
+      presupuesto_usd: calcularTotal(),
+      // 'origen' no se envía: la columna tiene default 'web' en la base, así el
+      // guardado sigue funcionando aunque todavía no se haya corrido schema3.sql.
+    });
+    if (!error) ultimaFirmaGuardada = firma;
+  } catch { /* sin conexión: el lead igual llega por WhatsApp */ }
+}
+
+// ---------- 8.10 PANEL DE EMPLEADO ----------
+// Acceso SOLO para A&M (vendedor/empleado): no hay botón visible para el
+// cliente. Se abre con la URL terminada en "#panel" o con Ctrl/Cmd+Shift+L.
+
+function abrirPanel() {
+  // El panel de empleado es una PÁGINA PROPIA (panel.html), separada de
+  // la vitrina del cliente: estadísticas, pedidos, escuadras y stock.
+  location.href = "panel.html";
+}
+
+// Atajo de teclado para empleados: Ctrl/Cmd+Shift+L abre la página del panel
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "L" || e.key === "l")) {
+    e.preventDefault();
+    abrirPanel();
+  }
+});
+
 // ---------- 9. INIT ----------
-document.getElementById("foot-year").textContent = new Date().getFullYear();
-document.getElementById("ph-contact").textContent = `WhatsApp ${WHATSAPP_DISPLAY} · Instagram @${USUARIO_INSTAGRAM}`;
-// Si se abrió un link de diseño compartido, lo aplicamos y llevamos al personalizador
-const vinoDeLinkCompartido = aplicarDiseñoDesdeURL();
-initLeadForm();
-renderCatalogo();
-renderObras();
-renderTestimonios();
-renderFAQ();
-if (vinoDeLinkCompartido) irATab("personalizador");
-obtenerCotizacion(); // no bloquea el render inicial; re-renderiza cuando llega
+(async function init() {
+  // 1) Intentar traer el contenido desde Supabase (si está configurado).
+  await cargarDatosDeSupabase();
+  // 2) Aplicar por encima los cambios guardados localmente (panel de edición).
+  aplicarOverrides();
+  document.getElementById("foot-year").textContent = new Date().getFullYear();
+  document.getElementById("ph-contact").textContent = `WhatsApp ${WHATSAPP_DISPLAY} · Instagram @${USUARIO_INSTAGRAM}`;
+  // Si se abrió un link de diseño compartido, lo aplicamos y llevamos al personalizador
+  const vinoDeLinkCompartido = aplicarDiseñoDesdeURL();
+  initLeadForm();
+  renderCatalogo();
+  renderObras();
+  renderTestimonios();
+  renderFAQ();
+
+  // --- Navegación inicial con soporte de historial ---
+  // Determinar la pestaña inicial según el contexto
+  let tabInicial = "catalogo";
+  if (vinoDeLinkCompartido) {
+    tabInicial = "personalizador";
+  }
+  // Marcar el estado inicial en el historial (replace, no push)
+  history.replaceState({ tab: tabInicial }, "");
+  actualizarTabsVisibles(); // mostrar u ocultar tabs según si hay modelo
+  if (tabInicial !== "catalogo") _cambiarVistaTab(tabInicial);
+
+  // Deep-links especiales (overlays, no tabs)
+  if (location.hash === "#editar") abrirAdmin(); // acceso directo al editor
+  if (location.hash === "#panel") abrirPanel();  // acceso directo al panel de empleado
+  obtenerCotizacion(); // no bloquea el render inicial; re-renderiza cuando llega
+})();
 
 // ---------- 10. ¿ENTRA EN MI PATIO? ----------
 // El usuario ingresa largo y ancho de su terreno y ve qué modelos del catálogo

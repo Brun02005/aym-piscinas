@@ -18,8 +18,6 @@
 <!-- Favicon: logo de la marca -->
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -31,8 +29,8 @@
   </div>
   <nav class="tabs" id="tabs">
     <button class="tab-btn active" data-tab="catalogo">01 · Catálogo</button>
-    <button class="tab-btn" data-tab="personalizador">02 · Personalizador</button>
-    <button class="tab-btn" data-tab="presupuesto">03 · Presupuesto</button>
+    <button class="tab-btn" data-tab="personalizador" hidden>02 · Personalizador</button>
+    <button class="tab-btn" data-tab="presupuesto" hidden>03 · Presupuesto</button>
   </nav>
 </header>
 
@@ -41,8 +39,8 @@
   <!-- ============ TAB 1: CATÁLOGO ============ -->
   <section class="tab-panel active" id="tab-catalogo">
     <div class="hero water-shimmer">
-      <h1>Tres gamas. Una sola piscina: la tuya.</h1>
-      <p>Trabajamos con distintos fabricantes para cubrir cada presupuesto. Elegí tu modelo, personalizá los detalles y llevate el presupuesto al instante.</p>
+      <h1 id="hero-titulo">Tres gamas. Una sola piscina: la tuya.</h1>
+      <p id="hero-sub">Trabajamos con distintos fabricantes para cubrir cada presupuesto. Elegí tu modelo, personalizá los detalles y llevate el presupuesto al instante.</p>
       <div class="hero-cta">
         <button class="btn-hero-primary" id="btn-abrir-quiz">Ayudame a elegir</button>
         <a class="btn-hero-ghost" href="#como-funciona">Cómo funciona</a>
@@ -139,6 +137,11 @@
 
   <!-- ============ TAB 2: PERSONALIZADOR ============ -->
   <section class="tab-panel" id="tab-personalizador">
+    <div class="empty-state" id="empty-personalizador" hidden>
+      <p>🏊 Todavía no elegiste tu piscina.</p>
+      <p>Volvé al catálogo y elegí un modelo para personalizarlo.</p>
+      <button class="btn-primary" onclick="irATab('catalogo')">Ver catálogo</button>
+    </div>
     <div class="personalizer-grid">
 
       <div class="preview-pane">
@@ -227,6 +230,11 @@
 
   <!-- ============ TAB 3: PRESUPUESTO ============ -->
   <section class="tab-panel" id="tab-presupuesto">
+    <div class="empty-state" id="empty-presupuesto" hidden>
+      <p>📋 Todavía no armaste tu presupuesto.</p>
+      <p>Elegí un modelo del catálogo y personalizalo para ver el presupuesto.</p>
+      <button class="btn-primary" onclick="irATab('catalogo')">Ver catálogo</button>
+    </div>
     <div class="budget-wrap">
       <!-- Encabezado que aparece solo al imprimir / guardar PDF -->
       <div class="print-header">
@@ -364,6 +372,36 @@
   </div>
 </div>
 
+<!-- ============ PANEL DE EDICIÓN (solo para A&M) ============ -->
+<div class="admin-overlay" id="admin-overlay" hidden>
+  <aside class="admin-panel" role="dialog" aria-label="Editar la página">
+    <header class="admin-head">
+      <b>✎ Editar la página</b>
+      <button type="button" class="admin-close" id="admin-close" aria-label="Cerrar">✕</button>
+    </header>
+    <nav class="admin-tabs" id="admin-tabs">
+      <button type="button" class="admin-tab active" data-atab="contacto">Contacto</button>
+      <button type="button" class="admin-tab" data-atab="textos">Textos</button>
+      <button type="button" class="admin-tab" data-atab="precios">Precios</button>
+      <button type="button" class="admin-tab" data-atab="obras">Obras</button>
+      <button type="button" class="admin-tab" data-atab="testimonios">Testimonios</button>
+      <button type="button" class="admin-tab" data-atab="faq">FAQ</button>
+      <button type="button" class="admin-tab" data-atab="datos">Datos</button>
+    </nav>
+    <div class="admin-body" id="admin-body"><!-- generado por JS --></div>
+    <footer class="admin-foot">
+      <span class="admin-hint" id="admin-hint">Los cambios se guardan en este navegador.</span>
+      <button type="button" class="admin-save" id="admin-save">Guardar cambios</button>
+    </footer>
+  </aside>
+</div>
+
+<!-- El panel de empleado vive en su propia página: panel.html
+     (se llega con Ctrl/Cmd+Shift+L, con la URL #panel, o entrando directo) -->
+
+<!-- Cliente de Supabase (backend): librería oficial + credenciales del proyecto -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-config.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
